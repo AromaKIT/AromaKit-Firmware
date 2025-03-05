@@ -35,7 +35,7 @@ pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(AromaKit-test2 AromaKit-test2.c )
+add_executable(AromaKit-test2 src/main.c src/bt_spp.c)
 
 pico_set_program_name(AromaKit-test2 "AromaKit-test2")
 pico_set_program_version(AromaKit-test2 "0.1")
@@ -44,19 +44,32 @@ pico_set_program_version(AromaKit-test2 "0.1")
 pico_enable_stdio_uart(AromaKit-test2 0)
 pico_enable_stdio_usb(AromaKit-test2 1)
 
+set(BTSTACK_ROOT ${PICO_SDK_PATH}/lib/btstack)
+
 # Add the standard library to the build
 target_link_libraries(AromaKit-test2
-        pico_stdlib)
+        pico_stdlib
+        pico_multicore
+        pico_btstack_cyw43
+        pico_cyw43_arch_threadsafe_background
+        pico_btstack_classic)
 
 # Add the standard include files to the build
 target_include_directories(AromaKit-test2 PRIVATE
-        ${CMAKE_CURRENT_LIST_DIR}
+        ${BTSTACK_ROOT}/src
+        ${CMAKE_CURRENT_LIST_DIR}/src
 )
 
 # Add any user requested libraries
 target_link_libraries(AromaKit-test2 
-        
+
         )
+
+target_compile_definitions(AromaKit-test2 PRIVATE
+    #PICO_STDIO_USB_CONNECT_WAIT_TIMEOUT_MS=3000
+    CYW43_LWIP=0
+    #WANT_HCI_DUMP=1 # This enables btstack debug
+    )
 
 pico_add_extra_outputs(AromaKit-test2)
 
