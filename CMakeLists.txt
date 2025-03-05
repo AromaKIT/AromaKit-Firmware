@@ -46,6 +46,8 @@ pico_enable_stdio_usb(AromaKit-test2 1)
 
 set(BTSTACK_ROOT ${PICO_SDK_PATH}/lib/btstack)
 
+add_subdirectory(lib/pi-pico-LCD/lcd_display build)
+
 # Add the standard library to the build
 target_link_libraries(AromaKit-test2
         pico_stdlib
@@ -53,7 +55,8 @@ target_link_libraries(AromaKit-test2
         hardware_spi
         pico_btstack_cyw43
         pico_cyw43_arch_threadsafe_background
-        pico_btstack_classic)
+        pico_btstack_classic
+        lcd_display)
 
 # Add the standard include files to the build
 target_include_directories(AromaKit-test2 PRIVATE

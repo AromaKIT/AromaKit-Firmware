@@ -4,11 +4,15 @@
 #include "pico/multicore.h"
 #include "pico/cyw43_arch.h"
 #include "pico/mutex.h"
+#include "hardware/gpio.h"
+
+#include "lcd_display.hpp"
 
 #include "bt_spp.h"
 #include "st7565.h"
 
 ST7565 disp(spi0, 3, 2, 5, 4, 6);
+LCDdisplay myLCD(8, 9, 10, 11, 12, 13, 16, 2); // DB4, DB5, DB6, DB7, RS, E, character_width, no_of_lines
 
 mutex_t line_mutex;
 bool line_ready = false;
@@ -47,6 +51,24 @@ void core1_main() {
     }
 }
 
+const int NUM_MOODS = 4;
+const char *MOOD_STRINGS[] = {
+    "Peace ",
+    "Money ",
+    "Health",
+    "Sleep ",
+};
+int selection = 0;
+
+void update_lcd() {
+    myLCD.clear() ;
+    myLCD.print_wrapped("Select mood:    ");
+
+    char buf[17];
+    sprintf(buf, "<    %s    >", MOOD_STRINGS[selection]);
+    myLCD.print(buf);
+}
+
 int main() {
     sleep_ms(1000);
     stdio_init_all();
@@ -71,6 +93,23 @@ int main() {
     // }
     disp.show();
 
+    myLCD.init();
+    myLCD.cursor_off();
+    myLCD.clear() ;
+    myLCD.print("Select mood:    ");
+    myLCD.print("<    Peace     >");
+    // sleep_ms(2500);
+
+    gpio_init(14);
+    gpio_set_input_enabled(14, true);
+    gpio_set_pulls(14, true, false);
+    gpio_init(15);
+    gpio_set_input_enabled(15, true);
+    gpio_set_pulls(15, true, false);
+    gpio_init(16);
+    gpio_set_input_enabled(16, true);
+    gpio_set_pulls(16, true, false);
+
     while (true) {
         // printf("Hello, world!\n");
         if (mutex_try_enter(&line_mutex, NULL)) {
@@ -83,6 +122,25 @@ int main() {
             }
             mutex_exit(&line_mutex);
         }
-        sleep_ms(1000);
+
+        if (!gpio_get(14)) {
+            // printf("blue button\n");
+            selection = (selection + 1) % NUM_MOODS;
+            update_lcd();
+            sleep_ms(10);
+        }
+        if (!gpio_get(15)) {
+            // printf("red button\n");
+            selection = (selection + NUM_MOODS - 1) % NUM_MOODS;
+            update_lcd();
+            sleep_ms(10);
+        }
+        if (!gpio_get(16)) {
+            printf("yellow button\n");
+        }
+
+
+
+        sleep_ms(10);
     }
 }
