@@ -30,7 +30,7 @@ const uint8_t CMD_SET_VOLUME = 0x81;
 // Display parameters
 const uint8_t DISPLAY_W = 128;
 const uint8_t DISPLAY_H = 64;
-const uint8_t DISPLAY_CONTRAST = 0x1B;
+const uint8_t DISPLAY_CONTRAST = 0x10;
 const uint8_t DISPLAY_RESISTOR_RATIO = 5;
 const uint8_t DISPLAY_POWER_MODE = 7;
 
@@ -123,4 +123,48 @@ void ST7565::set_inverted(bool inverted) {
 
 void ST7565::fill(bool bit) {
     memset(buffer, bit ? 0xff : 0x00, sizeof(buffer));
+}
+
+#include "font_petme128_8x8.h"
+
+void ST7565::pixel(int x, int y, bool c) {
+    // pixels are in vertical order, lsb first
+    // e.g. col 0 is 8 bytes long, with byte 0 bit n being
+    //  0  8
+    //  1  9
+    //  2 10
+    //  3 11
+    //  4 12
+    //  5 13
+    //  6 14
+    //  7 15
+    //  8 16
+
+    int bit = 1 << (y % 8);
+    int row = x;
+    int col = (y / 8) * 128;
+    if (c) {
+        buffer[row+col] |= bit;
+    } else {
+        buffer[row+col] &= ~bit;
+    }
+}
+
+void ST7565::blit(const uint8_t *from, int x, int y, int w, int h) {
+    for (int dx = 0; dx < w; dx++) {
+        for (int dy = 0; dy < h; dy++) {
+            pixel(x+dx, y+dy, from[dx] & (1<<dy));
+        }
+    }
+}
+
+void ST7565::print(int x, int y, const char *str) {
+    // for (int i = 1; i < 32; i++) {
+    //     blit(&font_petme128_8x8[i*8], i * 8, (i / 16) * 8, 8, 8);
+    // }
+    for (int i = 0; i < strlen(str); i++) {
+        if (str[i] < 32) continue;
+        uint8_t ch = str[i] - 32;
+        blit(&font_petme128_8x8[ch*8], x + i*8, y + ((i / 16) * 8), 8, 8);
+    }
 }

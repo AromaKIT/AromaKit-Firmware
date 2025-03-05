@@ -30,6 +30,9 @@
 			"stdio.h": "c",
 			"multicore.h": "c",
 			"cyw43_arch.h": "c"
-		}
+		},
+		"cSpell.words": [
+			"btstack"
+		]
 	}
 }

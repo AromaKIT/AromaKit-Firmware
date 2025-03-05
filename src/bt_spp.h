@@ -7,7 +7,9 @@ extern "C" {
 
 #include <stdint.h>
 
-int btstack_main(int argc, const char * argv[]);
+typedef void (*recv_callback_t)(char *, size_t);
+void set_recv_callback(recv_callback_t func);
+void btstack_main();
 
 size_t spp_write(void *buffer, size_t size, size_t count);
 size_t spp_read(void *buffer, size_t size, size_t count);
