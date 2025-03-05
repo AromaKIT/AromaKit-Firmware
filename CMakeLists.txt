@@ -35,7 +35,7 @@ pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(AromaKit-test2 src/main.c src/bt_spp.c)
+add_executable(AromaKit-test2 src/main.cpp src/bt_spp.c src/st7565.cpp)
 
 pico_set_program_name(AromaKit-test2 "AromaKit-test2")
 pico_set_program_version(AromaKit-test2 "0.1")
@@ -50,6 +50,7 @@ set(BTSTACK_ROOT ${PICO_SDK_PATH}/lib/btstack)
 target_link_libraries(AromaKit-test2
         pico_stdlib
         pico_multicore
+        hardware_spi
         pico_btstack_cyw43
         pico_cyw43_arch_threadsafe_background
         pico_btstack_classic)
