@@ -1,3 +1,3 @@
-# AromaKit-test2
+# AromaKit-Firmware
 
-Firmware test 2 with the C pico-sdk
+Code for the AromaKit hardware
