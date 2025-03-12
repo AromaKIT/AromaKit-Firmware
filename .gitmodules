@@ -1,3 +1,6 @@
 [submodule "lib/pi-pico-LCD"]
 	path = lib/pi-pico-LCD
 	url = https://github.com/martinkooij/pi-pico-LCD.git
+[submodule "lib/pico-vfs"]
+	path = lib/pico-vfs
+	url = https://github.com/oyama/pico-vfs.git

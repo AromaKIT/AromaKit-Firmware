@@ -11,6 +11,8 @@
 #include "bt_spp.h"
 #include "st7565.h"
 
+#include "filesystem/vfs.h"
+
 ST7565 disp(spi0, 3, 2, 5, 4, 6);
 LCDdisplay myLCD(8, 9, 10, 11, 12, 13, 16, 2); // DB4, DB5, DB6, DB7, RS, E, character_width, no_of_lines
 
@@ -26,7 +28,7 @@ void hal_led_toggle(void){
 
 void bt_recv(char *recv_line, size_t size) {
     mutex_enter_blocking(&line_mutex);
-    strncpy(line, recv_line, sizeof(line));
+    strncpy(line, recv_line, 63);
     line_ready = true;
     mutex_exit(&line_mutex);
     printf("recv data size %d: '%s'\n", size, line);
@@ -70,8 +72,9 @@ void update_lcd() {
 }
 
 int main() {
-    sleep_ms(1000);
     stdio_init_all();
+    fs_init();
+
     sleep_ms(1000);
     printf("Entered core0 (core=%d)\n", get_core_num());
     multicore_launch_core1(core1_main);

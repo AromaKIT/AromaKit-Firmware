@@ -29,7 +29,8 @@
 			"stdlib.h": "c",
 			"stdio.h": "c",
 			"multicore.h": "c",
-			"cyw43_arch.h": "c"
+			"cyw43_arch.h": "c",
+			"vfs.h": "c"
 		},
 		"cSpell.words": [
 			"btstack"
