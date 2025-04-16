@@ -47,14 +47,8 @@ pico_enable_stdio_usb(AromaKit-test2 1)
 set(BTSTACK_ROOT ${PICO_SDK_PATH}/lib/btstack)
 
 add_subdirectory(lib/pi-pico-LCD/lcd_display)
-
-#string(REPLACE " -Werror" "" _CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-#set(CMAKE_CXX_FLAGS ${_CMAKE_CXX_FLAGS} CACHE "" INTERNAL FORCE)
-#string(REPLACE " -Werror" "" _CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
-#set(CMAKE_C_FLAGS ${_CMAKE_C_FLAGS} CACHE "" INTERNAL FORCE)
-
 add_subdirectory(lib/pico-vfs)
-pico_enable_filesystem(${CMAKE_PROJECT_NAME} SIZE 32768)
+pico_enable_filesystem(${CMAKE_PROJECT_NAME} SIZE 65536)
 target_compile_options(filesystem_default INTERFACE -Wno-error)
 
 # Add the standard library to the build

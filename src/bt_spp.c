@@ -123,9 +123,10 @@ static void one_shot_timer_setup(void){
  * on the rfcomm_cid that is include
 
  */ 
-
+static char send_buffer[128];
+static int send_len = 0;
 static char recv_line_buffer[128];
-static int recv_size;
+static int recv_size = 0;
 static recv_callback_t recv_callback = NULL;
 static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t size) {
     bd_addr_t event_addr;
@@ -183,7 +184,10 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
                     }
                     break;
                 case RFCOMM_EVENT_CAN_SEND_NOW:
-                    rfcomm_send(rfcomm_channel_id, (uint8_t*) lineBuffer, (uint16_t) strlen(lineBuffer));  
+                    if (send_len) {
+                        rfcomm_send(rfcomm_channel_id, (uint8_t*) send_buffer, (uint16_t) send_len);
+                        send_len = 0;
+                    }
                     break;
 
                 case RFCOMM_EVENT_CHANNEL_CLOSED:
@@ -212,6 +216,13 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
         default:
             break;
     }
+}
+
+size_t spp_write(void *buf, size_t size, size_t count) {
+    memcpy(send_buffer, buf, (size*count));
+    send_len = size*count;
+    rfcomm_request_can_send_now_event(rfcomm_channel_id);
+    return size*count;
 }
 
 void set_recv_callback(recv_callback_t func) {
